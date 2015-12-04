@@ -298,10 +298,30 @@
                     var rowIndexStart = arguments[2];
                     return wtObj.load(tableData, rowIndexStart);
                     break;
-                case "getSelectedRowsData":
-                    return wtObj.getSelectedRowsData();
+                case "getSelectedRowsCount":
+                    var count = 0;
+                    var rowsData = wtObj.getSelectedRowsData();
+                    if (rowsData) {
+                        for (var v in rowsData) {
+                            count++;
+                        }
+                    }
+                    return count;
                     break;
-                case "getSelectedRowsValue":
+                case "getSelectedRowsData":
+                    var rowsData = wtObj.getSelectedRowsData();
+                    var hasProp = false;
+                    for (var prop in rowsData) {
+                        hasProp = true;
+                        break;
+                    }
+                    if (hasProp) {
+                        return rowsData;
+                    } else {
+                        return null;
+                    }
+                    break;
+                case "getSelectedRowsPrimaryKey":
                     var rowsData = wtObj.getSelectedRowsData();
                     var values = null;
                     if (rowsData) {
@@ -310,7 +330,11 @@
                             values.push(v);
                         }
                     }
-                    return values;
+                    if (values && values.length > 0) {
+                        return values;
+                    } else {
+                        return null;
+                    }
                     break;
 
                 case "deleteSelectedRows":
@@ -320,7 +344,7 @@
                     return wtObj.deleteRow(arguments[1]);
                     break;
                 default:
-                    alert("No such method!");
+                    throw "No such method!";
                     return this
             }
         }

@@ -1,11 +1,11 @@
 {
-  "name": "w-page",
-  "homepage": "https://github.com/zkboys/w-page",
+  "name": "w-table",
+  "homepage": "https://github.com/zkboys/w-table",
   "version": "0.0.1",
   "license": "MIT",
   "ignore": [],
   "keywords": [
-    "pagination",
+    "table",
     "bootstrap"
   ],
   "devDependencies": {

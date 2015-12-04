@@ -7,6 +7,4 @@ bower install w-table
 
 git clone https://github.com/zkboys/w-table.git
 ## 使用：
-```
-
-```
+参考demo.html

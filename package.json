@@ -1,5 +1,5 @@
 {
-  "name": "w-page",
+  "name": "w-table",
   "version": "0.0.1",
   "devDependencies": {
     "del": "~1.2.0",
