@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+    <title>Bootstrap table plugin</title>
+    <link href="plugins/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="plugins/iCheck/skins/all.css" rel="stylesheet">
+    <link href="dist/css/w-table.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="panel panel-default">
+    <div class="panel-heading">
+        自定义表格组件
+    </div>
+    <div class="panel-body">
+        <div id="table-wrap" class="table-wrap" style="height:200px;"></div>
+    </div>
+</div>
+
+<script src="plugins/jquery/dist/jquery.min.js"></script>
+<script src="plugins/iCheck/icheck.min.js"></script>
+<script src="dist/js/w-table.min.js"></script>
+<script>
+    var columns = [
+        {
+            name: '姓名',
+            field: 'name',
+            width: 50,
+            align: "left"
+        },
+        {
+            name: "年龄",
+            field: "age",
+            width: 50,
+            align: "center"
+        },
+        {
+            name: "职位",
+            field: "position",
+            width: 60,
+            align: "center",
+            valueFilter: function (value, rowData, tableData) {
+                return value;
+            }
+        },
+        {
+            name: "入职时间",
+            field: "enter",
+            width: '100',
+            align: "center",
+            valueFilter: function (value, rowData, tableData) {
+                return value + '年';
+            }
+        }
+    ];
+    var tableData = createTableData();
+    function createTableData() {
+        var tableData = [];
+        for (var i = 0; i < 100; i++) {
+            tableData.push({
+                id: i,
+                name: 'jone' + i,
+                age: '25',
+                position: 'IT',
+                enter: '2015'
+
+            });
+        }
+        return tableData;
+    }
+    var operation = function (rowData, tableData) {
+        var operations = [];
+        operations.push('<button class="btn btn-danger btn-xs delete">删除</button>');
+        operations.push('<button class="btn btn-info btn-xs detail">详情</button>');
+        return operations.join('&nbsp;');
+    };
+    $(document).on('click', '.btn.delete', function () {
+        var $this = $(this);
+        var rowData = $this.parents('tr').data('rowData');
+        console.log(rowData);
+        alert('delete');
+    });
+    $(document).on('click', '.btn.detail', function () {
+        var $this = $(this);
+        var rowData = $this.parents('tr').data('rowData');
+        console.log(rowData);
+        alert('detail');
+    });
+    $('#table-wrap').wTable({
+        showCheckbox: true,//是否显示checkbox列 默认true
+        showRowIndex: false,//是否显示行号 默认false
+        rowIndexStart: 1,//行号开始值 默认1
+        columns: columns,//各列的配置信息 默认[]
+        tableData: tableData,//表格初始化数据
+        operationWidth: 100,
+        operation: operation,
+        primaryKey: "id"//主键，每行具有唯一性
+    });
+</script>
+</body>
+</html>
