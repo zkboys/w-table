@@ -251,7 +251,7 @@
             var mainCheck = $top.find('thead tr th input[type=checkbox][value=main]');
             mainCheck.iCheck('uncheck');
             $wrap.data('selectedRows', null);
-            _this.rebuildRowsIndex();
+            //_this.rebuildRowsIndex();
             return $wrap;
         },
         getSelectedRowsData: function () {
@@ -273,7 +273,7 @@
             $dataTable.find("tbody tr").each(function (k, v) {
                 var newIndex = $(v).index();
                 //更改显示的索引
-                $(v).find("td.w-table-index").html(newIndex + options.rowIndexStart);
+                $(v).find("td.w-table-index").html('<div class="w-table-text" data-owidth="30px" style="width:30px;">'+(newIndex + options.rowIndexStart)+'</div>');
             });
 
         }
