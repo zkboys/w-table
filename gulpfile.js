@@ -8,6 +8,8 @@
         rename = require('gulp-rename'),
         uglify = require('gulp-uglify'),
         del = require('del'),
+        connect = require('gulp-connect'),
+        open = require('gulp-open'),
         paths = {
             root: './',//当前路径
             source: {
@@ -77,5 +79,20 @@
             paths.dist.root + '/**/*'
         ], {force: true}, cb);
     });
+
+    gulp.task('connect', function () {
+        return connect.server({
+            root: [__dirname],
+            livereload: true,
+            port: '3001'
+        });
+    });
+
+    gulp.task('open', function () {
+        return gulp.src('./demo.html').pipe(open({uri: 'http://localhost:3001/demo.html'}));
+    });
+
+    gulp.task('server', ['watch', 'connect', 'open']);
+
     gulp.task('default', ['scripts', 'styles']);
 })();

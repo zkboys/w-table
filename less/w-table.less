@@ -1,10 +1,15 @@
 .w-table {
   margin-bottom: 0;
+  table-layout: fixed;
   thead {
     tr {
       th {
         text-align: center;
         vertical-align: middle !important; /*垂直居中*/
+        word-break: keep-all;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
         input[type=checkbox] {
           cursor: pointer;
         }
@@ -15,6 +20,10 @@
     tr {
       td {
         vertical-align: middle !important; /*垂直居中*/
+        word-break: keep-all;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
         &.w-table-index {
           text-align: center;
         }
@@ -27,14 +36,8 @@
       }
     }
   }
-  .w-table-text {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    display: inline-block;
-    margin-bottom: -3px; //由于 display: inline-block; 引起的表格中内容偏上，这里修复一下。
-  }
 }
+
 .table-wrap {
   position: relative;
   padding: 0 15px;

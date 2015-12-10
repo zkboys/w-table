@@ -18,7 +18,7 @@
         this.columnDefaults = {
             name: 'columnName',// 表头名称
             field: 'columnField',// 字段名称
-            width: "100px",//列宽
+            width: null,//列宽,如果直接写数字，不写单位，表格就当做没有设置宽度处理。此列宽度自适应，其他的（设置宽度的）固定。
             align: "left",// 排列方式
             valueFilter: function (value, rowData, tableData) {
                 return value;
@@ -63,27 +63,31 @@
             var $thead = $('<thead><tr></tr></thead>');
             // 添加checkbox列
             if (options.showCheckbox) {
-                $thead.find("tr").append('<th style="width:30px;"><div class="w-table-text" data-owidth="30px" style="width:30px;"><input type="checkbox" value="main"></div></th>');
+                $thead.find("tr").append('<th style="width:40px;"><input type="checkbox" value="main"></th>');
             }
             //添加行号
             if (options.showRowIndex) {
-                $thead.find("tr").append('<th style="width:30px;"><div class="w-table-text" data-owidth="30px" style="width:30px;">#</div></th>');
+                $thead.find("tr").append('<th style="width:40px;">#</th>');
             }
             //添加数据列
             var colLength = columns.length;
             for (var ci = 0; ci < colLength; ci++) {
                 var col = columns[ci];
                 var width = col.width;
-                width = typeof(width) == "number" ? width + "px" : width;
-                col.width = width;
+                var widthStr = '';
+                if (width != null) {
+                    width = typeof(width) == "number" ? width + "px" : width;
+                    col.width = width;
+                    widthStr = 'width:' + width + ';';
+                }
                 var name = col.name;
-                var $th = $('<th style="width:' + width + ';"><div class="w-table-text" data-owidth="' + width + '" style="text-align:center;width:' + width + '" title="' + name + '">' + name + '</div></th>');
+                var $th = $('<th style="' + widthStr + '" title="' + name + '">' + name + '</th>');
                 $th.data("colOpt", col);
                 $thead.find("tr").append($th);
             }
             // 添加操作列
             if (options.operation) {
-                $thead.find("tr").append('<th style="width:' + options.operationWidth + ';"><div class="w-table-text"  data-owidth="' + options.operationWidth + '" style="width:' + options.operationWidth + ';">操作</div></th>');
+                $thead.find("tr").append('<th style="width:' + options.operationWidth + ';">操作</th>');
             }
 
             $top.find('table').html($thead);
@@ -162,11 +166,11 @@
                 //添加checkbox
                 if (options.showCheckbox) {
                     var primaryValue = rowData[options.primaryKey];
-                    $tr.append('<td class="w-table-check" style="width:30px;"><div class="w-table-text" data-owidth="30px" style="width:30px;"><input type="checkbox" name="rowIndex" value="' + primaryValue + '"></div></td>');
+                    $tr.append('<td class="w-table-check" style="width:40px;"><input type="checkbox" name="rowIndex" value="' + primaryValue + '"></td>');
                 }
                 //添加行号
                 if (options.showRowIndex) {
-                    $tr.append('<td class="w-table-index" style="width:30px;"><div class="w-table-text" data-owidth="30px" style="width:30px;">' + (rowIndex + parseInt(options.rowIndexStart)) + '</div></td>');
+                    $tr.append('<td class="w-table-index" style="width:40px;">' + (rowIndex + parseInt(options.rowIndexStart)) + '</td>');
                 }
                 //添加数据
                 var columnLength = columns.length;
@@ -182,7 +186,8 @@
                     if (typeof(value) == 'string' && value.indexOf('<img') >= 0) {
                         title = '';
                     }
-                    var $td = $('<td class="w-table-cell" style="width:' + width + ';text-align:' + align + '"><div class="w-table-text" data-owidth="' + width + '" style="text-align:' + align + ';width:' + width + ' " ' + title + '>' + value + '</div></td>');
+                    var widthStr = width != null ? 'width:' + width + ';' : '';
+                    var $td = $('<td class="w-table-cell" style="' + widthStr + 'text-align:' + align + '" ' + title + '>' + value + '</td>');
                     $tr.append($td);
                 }
 
@@ -190,7 +195,7 @@
                     // 添加操作列
                     var operationStr = options.operation(rowData, tableData);
                     if (operationStr) {
-                        $tr.append('<td style="text-align: center;width:' + options.operationWidth + '"><div class="w-table-text" data-owidth="' + options.operationWidth + '" style="width:' + options.operationWidth + ';">' + operationStr + '</div></td>');
+                        $tr.append('<td style="text-align: center;width:' + options.operationWidth + '">' + operationStr + '</td>');
                     }
                 }
 
@@ -273,7 +278,7 @@
             $dataTable.find("tbody tr").each(function (k, v) {
                 var newIndex = $(v).index();
                 //更改显示的索引
-                $(v).find("td.w-table-index").html('<div class="w-table-text" data-owidth="30px" style="width:30px;">'+(newIndex + options.rowIndexStart)+'</div>');
+                $(v).find("td.w-table-index").html(newIndex + options.rowIndexStart);
             });
 
         }

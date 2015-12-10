@@ -1,10 +1,15 @@
 .w-table {
   margin-bottom: 0;
+  table-layout: fixed;
 }
 .w-table thead tr th {
   text-align: center;
   vertical-align: middle !important;
   /*垂直居中*/
+  word-break: keep-all;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .w-table thead tr th input[type=checkbox] {
   cursor: pointer;
@@ -12,6 +17,10 @@
 .w-table tbody tr td {
   vertical-align: middle !important;
   /*垂直居中*/
+  word-break: keep-all;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .w-table tbody tr td.w-table-index {
   text-align: center;
@@ -21,13 +30,6 @@
 }
 .w-table tbody tr td.w-table-check input[type=checkbox] {
   cursor: pointer;
-}
-.w-table .w-table-text {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  display: inline-block;
-  margin-bottom: -3px;
 }
 .table-wrap {
   position: relative;
