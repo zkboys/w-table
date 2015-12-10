@@ -17,6 +17,7 @@
         };
         this.columnDefaults = {
             name: 'columnName',// 表头名称
+            title: '',
             field: 'columnField',// 字段名称
             width: '100%',//列宽,100 '100px' '20%'。
             minWidth: 50,// 自适应列的最小宽度，只有自适应列才起作用。
@@ -116,8 +117,8 @@
                 }
                 col.widthStr = widthStr;
                 col.autoWidthClass = autoWidthClass;
-                var name = $('<div>' + col.name + '</div>').text();
-                var $th = $('<th class="' + autoWidthClass + '" style="' + widthStr + '" title="' + name + '">' + col.name + '</th>');
+                var title = col.title ? col.title : $('<div>' + col.name + '</div>').text();
+                var $th = $('<th class="' + autoWidthClass + '" style="' + widthStr + '" title="' + title + '">' + col.name + '</th>');
                 $th.data("colOpt", col);
                 $thead.find("tr").append($th);
             }
@@ -192,9 +193,9 @@
                         var colOpt = $th.data('colOpt');
                         var minWidth = parseInt(colOpt.minWidth) + 'px';
                         $th.css('width', minWidth)
-                        $center.find('table tr td:eq('+k+')').css('width', minWidth);
+                        $center.find('table tr td:eq(' + k + ')').css('width', minWidth);
                     });
-                }else{
+                } else {
                     $ths.each(function (k, v) {
                         var $th = $(v);
                         if (!$th.hasClass('auto-width')) {
@@ -202,7 +203,7 @@
                         }
                         var colOpt = $th.data('colOpt');
                         $th.css('width', colOpt.width);
-                        $center.find('table tr td:eq('+k+')').css('width', colOpt.width);
+                        $center.find('table tr td:eq(' + k + ')').css('width', colOpt.width);
                     });
                 }
                 $ths.each(function (k, v) {
@@ -211,9 +212,9 @@
                     var width = $th.width();
                     if (colOpt.autoWidthClass) {
                         var minWidth = parseInt(colOpt.minWidth);
-                        if(width<minWidth){
-                            $th.css('width',minWidth);
-                            $center.find('table tr td:eq('+k+')').css('width', minWidth);
+                        if (width < minWidth) {
+                            $th.css('width', minWidth);
+                            $center.find('table tr td:eq(' + k + ')').css('width', minWidth);
                         }
                     }
                 });
