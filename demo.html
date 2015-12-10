@@ -30,19 +30,20 @@
 
 <script src="//cdn.bootcss.com/jquery/1.11.3/jquery.min.js"></script>
 <script src="//cdn.bootcss.com/iCheck/1.0.1/icheck.min.js"></script>
-<script src="dist/js/w-table.min.js"></script>
+<script src="dist/js/w-table.js"></script>
 <script>
     /*
-    关于columns宽度（width）的说明：
-    如果是数字：单位为px
-    如果是字符串：要表明单位：px或%
-    如果缺省，或者单位为%，所有的缺省或者%的列，宽度将根据比例自适应，其他列宽度固定
-    如果都指定了确定的宽度，所有的列在表格足够宽的情况下，按照比例自适应，表格宽度不够时，将出现横向滚动条。
+     关于columns宽度（width）的说明：
+     如果是数字：单位为px
+     如果是字符串：要表明单位：px或%
+     如果缺省，或者单位为%，所有的缺省或者%的列，宽度将根据比例自适应，其他列宽度固定
+     如果都指定了确定的宽度，所有的列在表格足够宽的情况下，按照比例自适应，表格宽度不够时，将出现横向滚动条。
 
-    一般内容固定的列设置一个确定的宽度，内容不固定的列，width属性缺省，或者写成%
+     一般内容固定的列设置一个确定的宽度，内容不固定的列，width属性缺省，或者写成%
 
-    注意：width不固定的列，当表格宽度一直缩小时，此列宽最后会变成0
-    * */
+     注意：width不固定的列，当表格宽度一直缩小时，此列宽最后会变成0
+            width最好不要缺省，如果有自适应列宽，最好保证所有列宽设置的百分比之和为100（或者大于100），否则会出现其他固定宽度的列宽并不固定的情况。
+     * */
     var columns = [//列配置信息
         {
             name: '姓名',
@@ -53,13 +54,15 @@
         {
             name: "年龄",
             field: "age",
-            width: "20%",
+            width: '20%',
+            minWidth: 300,// 自适应列的最小宽度，只有自适应列才起作用。
             align: "center"
         },
         {
             name: "职位",
             field: "position",
-            width: "80%",
+            width: '30%',
+            minWidth: '100px',
             align: "center",
             valueFilter: function (value, rowData, tableData) {
                 return value;

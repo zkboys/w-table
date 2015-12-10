@@ -18,7 +18,8 @@
         this.columnDefaults = {
             name: 'columnName',// 表头名称
             field: 'columnField',// 字段名称
-            width: null,//列宽,如果直接写数字，不写单位，表格就当做没有设置宽度处理。此列宽度自适应，其他的（设置宽度的）固定。
+            width: '100%',//列宽,100 '100px' '20%'。
+            minWidth: 50,// 自适应列的最小宽度，只有自适应列才起作用。
             align: "left",// 排列方式
             valueFilter: function (value, rowData, tableData) {
                 return value;
@@ -61,35 +62,65 @@
             var $center = $wrap.find('.center');
             //表头处理
             var $thead = $('<thead><tr></tr></thead>');
-            // 添加checkbox列
-            if (options.showCheckbox) {
-                $thead.find("tr").append('<th style="width:40px;"><input type="checkbox" value="main"></th>');
-            }
             //添加行号
             if (options.showRowIndex) {
-                $thead.find("tr").append('<th style="width:40px;">#</th>');
+                var indexOpt = {
+                    isIndex: true,
+                    name: '#',// 表头名称
+                    field: 'columnField-index',// 字段名称
+                    width: 40,
+                    align: "center"
+                };
+                indexOpt = $.extend({}, _this.columnDefaults, indexOpt);
+                columns.unshift(indexOpt);
             }
-            //添加数据列
+            // 添加checkbox列
+            if (options.showCheckbox) {
+                var checkOpt = {
+                    isCheck: true,
+                    name: '<input type="checkbox" value="main"/>',
+                    field: 'columnField-check',
+                    width: 40,
+                    align: "center"
+                };
+                checkOpt = $.extend({}, _this.columnDefaults, checkOpt);
+                columns.unshift(checkOpt);
+            }
+            // 添加操作列
+            if (options.operation) {
+                var operationOpt = {
+                    isOperation: true,
+                    name: '操作',
+                    field: 'columnField-operation',
+                    width: options.operationWidth,
+                    align: "center"
+                };
+                operationOpt = $.extend({}, _this.columnDefaults, operationOpt);
+                columns.push(operationOpt);
+            }
+
+            //添加列
             var colLength = columns.length;
             for (var ci = 0; ci < colLength; ci++) {
                 var col = columns[ci];
                 var width = col.width;
                 var widthStr = '';
+                var autoWidthClass = 'auto-width';
                 if (width != null) {
                     width = typeof(width) == "number" ? width + "px" : width;
                     col.width = width;
                     widthStr = 'width:' + width + ';';
+                    if (width.indexOf('%') < 0) {
+                        autoWidthClass = "";
+                    }
                 }
-                var name = col.name;
-                var $th = $('<th style="' + widthStr + '" title="' + name + '">' + name + '</th>');
+                col.widthStr = widthStr;
+                col.autoWidthClass = autoWidthClass;
+                var name = $('<div>' + col.name + '</div>').text();
+                var $th = $('<th class="' + autoWidthClass + '" style="' + widthStr + '" title="' + name + '">' + col.name + '</th>');
                 $th.data("colOpt", col);
                 $thead.find("tr").append($th);
             }
-            // 添加操作列
-            if (options.operation) {
-                $thead.find("tr").append('<th style="width:' + options.operationWidth + ';">操作</th>');
-            }
-
             $top.find('table').html($thead);
 
             //载入数据
@@ -112,6 +143,24 @@
                     $('td.w-table-check input[type=checkbox]').iCheck('uncheck');
                 });
             }
+
+            $center.on('scroll', function () {
+                var sLeft = $(this).scrollLeft();
+                $top.scrollLeft(sLeft);
+            });
+
+            computeHeight();
+            computeCellWidth();
+            //var st = null;
+            $(window).on('resize', function () {
+                computeHeight();
+                computeCellWidth();
+                /*if (st)window.clearTimeout(st);
+                 st = setTimeout(function () {
+                 computeHeight();
+                 }, 100);*/
+
+            });
             function computeHeight() {
                 var $headTable = $top.find('table');
                 var wrapHeight = $wrap.height();
@@ -121,20 +170,55 @@
                 });
             }
 
-            computeHeight();
-            //var st = null;
-            $(window).on('resize', function () {
-                computeHeight();
-                /*if (st)window.clearTimeout(st);
-                 st = setTimeout(function () {
-                 computeHeight();
-                 }, 100);*/
+            function computeCellWidth() {
+                var $ths = $top.find('table th');
+                var totalWidth = 0;
+                var tableWidth = $top.find('table').width();
+                $ths.each(function (k, v) {
+                    var colOpt = $(v).data('colOpt');
+                    var width = colOpt.width;
+                    if (colOpt.autoWidthClass) {
+                        width = colOpt.minWidth;
+                    }
+                    width = parseInt(width);
+                    totalWidth += width;
+                });
+                if (tableWidth < totalWidth) {
+                    $ths.each(function (k, v) {
+                        var $th = $(v);
+                        if (!$th.hasClass('auto-width')) {
+                            return true;
+                        }
+                        var colOpt = $th.data('colOpt');
+                        var minWidth = parseInt(colOpt.minWidth) + 'px';
+                        $th.css('width', minWidth)
+                        $center.find('table tr td:eq('+k+')').css('width', minWidth);
+                    });
+                }else{
+                    $ths.each(function (k, v) {
+                        var $th = $(v);
+                        if (!$th.hasClass('auto-width')) {
+                            return true;
+                        }
+                        var colOpt = $th.data('colOpt');
+                        $th.css('width', colOpt.width);
+                        $center.find('table tr td:eq('+k+')').css('width', colOpt.width);
+                    });
+                }
+                $ths.each(function (k, v) {
+                    var $th = $(v);
+                    var colOpt = $th.data('colOpt');
+                    var width = $th.width();
+                    if (colOpt.autoWidthClass) {
+                        var minWidth = parseInt(colOpt.minWidth);
+                        if(width<minWidth){
+                            $th.css('width',minWidth);
+                            $center.find('table tr td:eq('+k+')').css('width', minWidth);
+                        }
+                    }
+                });
+            }
 
-            });
-            $center.on('scroll', function () {
-                var sLeft = $(this).scrollLeft();
-                $top.scrollLeft(sLeft);
-            });
             return $wrap;
         },
         load: function (tableData, rowIndexStart) {
@@ -163,15 +247,6 @@
                 var rowData = tableData[rowIndex];
                 var $tr = $('<tr></tr>');
                 $tr.data("rowData", rowData);
-                //添加checkbox
-                if (options.showCheckbox) {
-                    var primaryValue = rowData[options.primaryKey];
-                    $tr.append('<td class="w-table-check" style="width:40px;"><input type="checkbox" name="rowIndex" value="' + primaryValue + '"></td>');
-                }
-                //添加行号
-                if (options.showRowIndex) {
-                    $tr.append('<td class="w-table-index" style="width:40px;">' + (rowIndex + parseInt(options.rowIndexStart)) + '</td>');
-                }
                 //添加数据
                 var columnLength = columns.length;
                 for (var i = 0; i < columnLength; i++) {
@@ -181,22 +256,28 @@
                     var width = col.width;
                     var valueFilter = col.valueFilter;
                     var value = rowData[field];
+                    var tdClass = 'w-table-cell';
+                    if (col.isCheck) {
+                        tdClass = 'w-table-check';
+                        var primaryValue = rowData[options.primaryKey];
+                        value = '<input type="checkbox" name="rowIndex" value="' + primaryValue + '">'
+                    }
+                    if (col.isIndex) {
+                        tdClass = 'w-table-index';
+                        value = rowIndex + parseInt(options.rowIndexStart);
+                    }
+                    if (col.isOperation) {
+                        tdClass = 'w-table-operation';
+                        value = options.operation(rowData, tableData);
+                    }
                     value = valueFilter(value, rowData, tableData);
                     var title = ' title="' + $('<div>' + value + '</div>').text() + '" ';// value有可能是富文本。
                     if (typeof(value) == 'string' && value.indexOf('<img') >= 0) {
                         title = '';
                     }
-                    var widthStr = width != null ? 'width:' + width + ';' : '';
-                    var $td = $('<td class="w-table-cell" style="' + widthStr + 'text-align:' + align + '" ' + title + '>' + value + '</td>');
+                    var $td = $('<td class="' + tdClass + ' ' + col.autoWidthClass + '" style="' + col.widthStr + 'text-align:' + align + '" ' + title + '>' + value + '</td>');
+                    $td.data("colOpt", col);
                     $tr.append($td);
-                }
-
-                if (options.operation) {
-                    // 添加操作列
-                    var operationStr = options.operation(rowData, tableData);
-                    if (operationStr) {
-                        $tr.append('<td style="text-align: center;width:' + options.operationWidth + '">' + operationStr + '</td>');
-                    }
                 }
 
                 $tbody.append($tr);
